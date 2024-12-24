@@ -1,0 +1,124 @@
+/* template_de_base.css */
+
+/* Style général avec la police Poppins */
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Style de la sidebar */
+.sidebar {
+  background-color: #435d7d;
+  color: white;
+  min-height: 100vh;
+  padding-top: 20px;
+  width: 18%; /* Augmenter la largeur de la sidebar pour plus d'espace */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  padding-top: 20px;
+  width: 18%; /* Augmenter la largeur de la sidebar pour plus d'espace */
+  z-index: 1000; /* Assurer que la sidebar reste au-dessus du contenu */
+  overflow-y: auto; /* Ajouter un défilement si la sidebar est trop haute */
+}
+
+.sidebar h2 {
+  font-size: 1.2rem; /* Réduction de la taille */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px; /* Réduction de la marge */
+}
+
+.sidebar a {
+  font-size: 10 rem; /* Réduction de la taille de la police */
+  color: white;
+  padding: 10px; /* Réduction du padding */
+  display: block;
+  font-weight: 100;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Effets au survol des éléments de menu */
+.sidebar a:hover {
+  color: #512da8;
+  background-color: white;
+  border-radius: 6px; /* Légère réduction des bordures arrondies */
+}
+
+/* Style du contenu */
+.content {
+  padding: 20px;
+  margin-left: 18%; /* Ajuster pour correspondre à la largeur de la sidebar */
+  padding-top: 70px; /* Crée un espace pour éviter que le contenu ne se cache derrière le header */
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 0.85rem; /* Réduction de la taille du texte dans les cartes */
+  width: 90%; /* Réduction de la largeur des cartes */
+  margin: 0 auto; /* Centrer les cartes */
+}
+
+.card-title {
+  font-size: 1.1rem; /* Légère réduction de la taille de la carte */
+  font-weight: bold;
+}
+.card-body {
+  padding: 0.8rem;
+}
+
+/* Header fixe avec taille réduite et alignement vertical */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(
+    100% - 16%
+  ); /* Largeur ajustée pour ne pas dépasser celle du contenu */
+  margin-left: 16%; /* Aligne le header avec la sidebar */
+  z-index: 900;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 50px; /* Hauteur réduite */
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Assure un alignement vertical centré */
+}
+
+/* Ajuster la taille du texte */
+header h1 {
+  font-size: 1rem; /* Taille de police réduite */
+  margin-bottom: 0; /* Enlève la marge inférieure */
+}
+
+/* Les graphiques doivent avoir un z-index supérieur pour être visibles au-dessus de la sidebar et du header */
+canvas {
+  position: relative;
+  z-index: 10; /* Assurer que le graphique est au-dessus de la sidebar et du header */
+  margin-top: 50px; /* Décaler vers le bas pour éviter qu'il ne soit caché par le header */
+  margin-left: 40%; /* Déplacer légèrement vers la droite de la sidebar (ajustez selon la largeur de la sidebar) */
+  width: 82% !important; /* Assurez-vous que le graphique occupe toute la largeur restante */
+  height: 900px; /* Définir une hauteur pour les graphiques */
+}
+
+/* Style pour le menu actif */
+.sidebar a.active {
+  color: #512da8;
+  background-color: #e9ecef; /* Gris clair élégant */
+  border-radius: 6px; /* Coins arrondis comme au survol */
+  font-weight: bold; /* Optionnel : rendre le texte plus visible */
+}
+
+/* Effet hover conservé */
+.sidebar a:hover {
+  color: #512da8;
+  background-color: white;
+  border-radius: 6px;
+}

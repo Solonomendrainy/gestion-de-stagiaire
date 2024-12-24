@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+
+    <!-- Inclure le fichier CSS externe -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}">
+    <style>
+   /* Contenu du fichier css/login.css ici */
+
+        #loading-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgb(0, 0, 0, 0.11);
+            border-radius: 50%;
+            border-top-color: rgb(235, 169, 47);
+            border-left-color: rgb(43, 145, 87);
+            border-right-color: rgb(20, 102, 226);
+            border-bottom-color: rgb(224, 71, 71);
+            animation: loader1776 2s linear infinite;
+        }
+
+        @keyframes loader1776 {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container input {
+            width: 100%; /* Garde la largeur maximale */
+            padding-right: 40px; /* Espace réservé pour l'icône */
+        }
+
+        .password-container i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em; /* Ajuste la taille de l'icône pour un meilleur alignement */
+        }
+
+        .alert-container {
+  position: absolute; /* Positionnez-le de manière absolue */
+  top: 50%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, -50%); /* Ajuste pour le centrage parfait */
+  z-index: 9999; /* S'assure qu'il est au-dessus des autres éléments */
+}
+
+.alert {
+  background-color: #f8d7da; /* Couleur de fond rouge pâle */
+  color: #721c24; /* Couleur du texte */
+  border: 1px solid #e2c5c8; /* Bordure rouge */
+  padding: 15px; /* Espacement interne */
+  border-radius: 5px; /* Coins arrondis */
+  margin-bottom: 15px; /* Espace en bas */
+}
+    </style>
+</head>
+
+<body>
+
+  <!-- Afficher les messages -->
+    <div class="alert-container">
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+          {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form action="" method="post">
+                <h1>Créer un compte</h1>
+                {% csrf_token %}
+                <div class="social-icons">
+            <span>Utilisez votre email pour vous inscrire</span>
+                </div>
+                
+                <input type="text" placeholder="Nom" name="nom" id="nom">
+                <input type="email" placeholder="Email" name="email" id="email">
+                <div class="password-container">
+                    <input type="password" placeholder="Mot de passe" name="motdepasse1" id="motdepasse1">
+                    <i class="bi bi-eye-fill" id="togglePassword1"></i>
+                </div>
+                <div class="password-container">
+                    <input type="password" placeholder="Mot de passe" name="motdepasse2" id="motdepasse2">
+                    <i class="bi bi-eye-fill" id="togglePassword2"></i>
+                </div>
+                <button type="submit" onclick="showLoader()">S'INSCRIRE</button>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form method="post">
+                <h1>SE CONNECTER</h1>
+                {% csrf_token %}
+                <div class="social-icons">
+           <span>Veuilez entrer votre nom d utilisateur et mot de passe</span>
+                </div>
+                
+                <input type="text" placeholder="Nom d'utilisateur" name="username" id="username" required>
+                <div class="password-container">
+                    <input type="password" placeholder="Mot de passe" name="password" id="password" required>
+                    <i class="bi bi-eye-fill" id="togglePassword"></i>
+                </div>
+                <a href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+                <button type="submit" onclick="showLoader()">SE CONNECTER</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Content de te revoir!</h1>
+                    <p>Entrez vos informations personnelles pour utiliser toutes les fonctionnalités du site</p>
+                    <button class="hidden" id="login">Se connecter</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Bonjour !</h1>
+                    <p>Inscrivez-vous avec vos informations personnelles pour utiliser toutes les fonctionnalités du site</p>
+                    <button class="hidden" id="register">S'inscrire</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loading-overlay" style="display: none;">
+        <div class="loader"></div>
+    </div>
+    <script>
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+        });
+
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+        });
+
+        // Fonction pour afficher le loader lors du soumission du formulaire
+        function showLoader() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'block';
+        }
+
+        // Fonction pour cacher le loader après le chargement
+        function hideLoader() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'none';
+        }
+
+        // Script pour basculer la visibilité du mot de passe
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+
+        const togglePassword1 = document.getElementById('togglePassword1');
+        const passwordInput1 = document.getElementById('motdepasse1');
+        togglePassword1.addEventListener('click', function () {
+            const type = passwordInput1.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput1.setAttribute('type', type);
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+
+        const togglePassword2 = document.getElementById('togglePassword2');
+        const passwordInput2 = document.getElementById('motdepasse2');
+        togglePassword2.addEventListener('click', function () {
+            const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput2.setAttribute('type', type);
+            this.classList.toggle('bi-eye-slash-fill');
+        });
+
+         // Fonction pour faire disparaître les messages
+    setTimeout(() => {
+        const alertContainer = document.querySelector('.alert-container');
+        if (alertContainer) {
+            alertContainer.style.display = 'none';
+        }
+    }, 1000); // 5000 millisecondes = 5 secondes
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,556 @@
+{% extends 'template_base.html' %}
+{% block titre %}Page Stagiaire{% endblock titre %}
+{% block contenu %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/tableau.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/sweetalert.css' %}">
+
+    <script src="{% static 'jquery/jquery.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/js.js' %}"></script>
+    <script src="{% static 'js/sweetalert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'js/sweetalert.js' %}"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="col-md-4 mb-4">
+                        <form method="" class="d-flex" >
+                        <input class="form-control m-2" id="searchField" type="search" name="recherche" placeholder="search" aria-label="search" >
+                        <button class="btn btn-outline-success m-2" type="submit">Chercher</button>
+                        <a  href="{% url 'liste' %}">
+                           <button class="btn btn-secondary m-2">
+                           <i class="bi bi-arrow-clockwise" ></i> 
+                          </button>
+                          </a>     
+                         </form>
+                                
+                        
+         </div>
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2>Listes <b>des nouveaux Stagiaires</b></h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="#addEmployeeModal" class="btn btn-success" data-bs-toggle="modal">
+                            <i class="bi bi-plus-circle"></i> <span>Ajouter un(e) Stagiair(e)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+         <div class="table-responsive"> <!-- Ajout de la classe table-responsive -->   
+            <table class="table table-striped table-hover custom-table " style="overflow-y: auto; max-height: 600px;" >
+                <thead>
+                    <tr>
+                        <th>CIN</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Fin de Stage</th>
+                        <th>Qualité</th>
+                        <th>Établissement</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in emp %}
+                    <tr>
+                        <td>{{ i.cin }}</td>
+                        <td>{{ i.nom }}</td>
+                        <td>{{ i.prenom }}</td>
+                        <td>{{ i.email }}</td>
+                        <td>{{ i.phone }}</td>
+                        <td>{{ i.findustage|date:"d M Y" }}</td>
+                        <td>{{ i.qualite }}</td>
+                        <td>{{ i.etablissement }}</td>
+                        <td>
+                            <a href="#editEmployeeModal-{{forloop.counter}}" class="edit" data-bs-toggle="modal">
+                                <i class="bi bi-pencil" data-bs-toggle="tooltip" title="Modifier"></i>
+                            </a>
+                            <a href="#deleteEmployeeModal-{{forloop.counter}}" class="delete" data-bs-toggle="modal">
+                               <i class="bi bi-trash" data-bs-toggle="tooltip" title="Supprimer"></i>
+                            </a>
+                            <a href="#affectationEmployeeModal-{{forloop.counter}}" class="affectation" data-bs-toggle="modal">
+                               <i class="bi bi-list-check" data-bs-toggle="tooltip" title="affectation"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+         <div class="clearfix">
+                <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+                <ul class="pagination">
+                    <!-- les paginations  -->
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Modals en dehors de la boucle -->
+    {% for i in emp %}
+   <!-- Edit Modal -->
+<div id="editEmployeeModal-{{forloop.counter}}" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{% url 'updates' i.id %}" method="post" id="editStagiaireForm-{{forloop.counter}}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Modification d'un(e) Stagiair(e)</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Colonne de gauche -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cin">CIN</label>
+                                <input name="cin" type="text" id="cin" class="form-control" required value="{{ i.cin }}" maxlength="14" pattern="^[0-9]{14}$" title="Le CIN doit contenir exactement 14 chiffres.">
+                            </div>
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+                                <input name="nom" type="text" id="nom" class="form-control" required value="{{ i.nom }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom">Prénom</label>
+                                <input name="prenom" type="text" id="prenom" class="form-control" required value="{{ i.prenom }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="qualite">Qualité</label>
+                                <input name="qualite" type="text" id="qualite" class="form-control" required value="{{ i.qualite }}">
+                            </div>
+                        </div>
+                        <!-- Colonne de droite -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="etablissement">Établissement</label>
+                                <input name="etablissement" type="text" id="etablissement" class="form-control" required value="{{ i.etablissement }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="findustage">Date fin de stage</label>
+                                <input name="findustage" type="date" id="findustage" class="form-control" required value="{{ i.findustage|date:'Y-m-d' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input name="email" type="email" id="email" class="form-control" required value="{{ i.email }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <input name="phone" type="text" id="phone" class="form-control" required value="{{ i.phone }}" maxlength="10" pattern="^[0-9]{10}$" title="Le téléphone doit contenir exactement 10 chiffres.">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+
+
+     <!-- Modals en dehors de la boucle -->
+    {% for i in emp %}
+    <!-- ajout affectation Modal -->
+<div id="affectationEmployeeModal-{{forloop.counter}}" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{% url 'aff' %}" method="post" id="affectationForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Affectation d'un(e) Stagiair(e)</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Colonne de gauche -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cin">CIN</label>
+                                <input name="cin" type="text" id="cin" class="form-control" required value="{{ i.cin }}" maxlength="14" pattern="^[0-9]{14}$" title="Le CIN doit contenir exactement 14 chiffres.">
+                                <div id="cinHelp" class="form-text text-danger">
+                                    {% if form.cin.errors %}
+                                        <small>{{ form.cin.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+                                <input name="nom" type="text" id="nom" class="form-control" required value="{{ i.nom }}">
+                                <div id="nomHelp" class="form-text text-danger">
+                                    {% if form.nom.errors %}
+                                        <small>{{ form.nom.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom">Prénom</label>
+                                <input name="prenom" type="text" id="prenom" class="form-control" required value="{{ i.prenom }}">
+                                <div id="prenomHelp" class="form-text text-danger">
+                                    {% if form.prenom.errors %}
+                                        <small>{{ form.prenom.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="qualite">Qualité</label>
+                                <input name="qualite" type="text" id="qualite" class="form-control" required value="{{ i.qualite }}">
+                                <div id="qualiteHelp" class="form-text text-danger">
+                                    {% if form.qualite.errors %}
+                                        <small>{{ form.qualite.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="encadrent">Encadrent</label>
+                                <select name="encadrent" id="iencadrent" class="form-control" required>
+                                    <option value="" data-nom="" data-prenom="">Sélectionner un encadrent</option>
+                                    {% for encadrent in stg %}
+                                        <option value="{{ encadrent.nom }}" data-nom="{{ encadrent.nom }}" data-division="{{ encadrent.division }}" data-prenom="{{ encadrent.prenom }}">
+                                            {{ encadrent.nom }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div id="encadrentHelp" class="form-text text-danger">
+                                    {% if form.encadrent.errors %}
+                                        <small>{{ form.encadrent.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="division">Division</label>
+                                <input name="division" type="text" id="addDivision" class="form-control" required>
+                                <div id="divisionHelp" class="form-text text-danger">
+                                    {% if form.division.errors %}
+                                        <small>{{ form.division.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Colonne de droite -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="etablissement">Établissement</label>
+                                <input name="etablissement" type="text" id="etablissement" class="form-control" required value="{{ i.etablissement }}">
+                                <div id="etablissementHelp" class="form-text text-danger">
+                                    {% if form.etablissement.errors %}
+                                        <small>{{ form.etablissement.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="findustage">Date fin de stage</label>
+                                <input name="findustage" type="date" id="findustage" class="form-control" required value="{{ i.findustage |date:'Y-m-d' }}">
+                                <div id="findustageHelp" class="form-text text-danger">
+                                    {% if form.findustage.errors %}
+                                        <small>{{ form.findustage.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input name="email" type="email" id="email" class="form-control" required value="{{ i.email }}">
+                                <div id="emailHelp" class="form-text text-danger">
+                                    {% if form.email.errors %}
+                                        <small>{{ form.email.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <input name="phone" type="text" id="phone" class="form-control" required value="{{ i.phone }}" maxlength="10" pattern="^[0-9]{10}$" title="Le téléphone doit contenir exactement 10 chiffres.">
+                                <div id="phoneHelp" class="form-text text-danger">
+                                    {% if form.phone.errors %}
+                                        <small>{{ form.phone.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="stage">Stage</label>
+                                <select name="stage" id="icin" class="form-control" required>
+                                    <option value="" data-nom="" data-prenom="">Sélectionner un stage</option>
+                                    {% for stage in star %}
+                                        <option value="{{ stage.titre }}" data-date_debut="{{ stage.date_debut }}">
+                                            {{ stage.titre }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div id="stageHelp" class="form-text text-danger">
+                                    {% if form.stage.errors %}
+                                        <small>{{ form.stage.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="debutdustage">Date début du stage</label>
+                                <input name="debutdustage" type="date" id="date_debut" class="form-control" required>
+                                <div id="debutdustageHelp" class="form-text text-danger">
+                                    {% if form.debutdustage.errors %}
+                                        <small>{{ form.debutdustage.errors }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+
+
+    
+
+    <!-- Delete Modal -->
+    {% for i in emp %}
+
+    <div id="deleteEmployeeModal-{{forloop.counter}}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Supprimer Stagiaire</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir supprimer {{ i.nom }} {{ i.prenom }} ?</p>
+                        <p class="text-warning"><small>Cette action ne peut pas être annulée.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <a href="{% url 'deletestagiaires' i.id %}" class="btn btn-danger">Supprimer</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Add Modal -->
+<div id="addEmployeeModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{% url 'add' %}" method="post" id="addStagiaireForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Ajout d'un(e) Stagiair(e)</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cin">CIN</label>
+                                <input name="cin" type="text" id="cin" class="form-control" required maxlength="14" pattern="^[0-9]{14}$" title="Le CIN doit contenir exactement 14 chiffres.">
+                            </div>
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+                                <input name="nom" type="text" id="nom" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom">Prénom</label>
+                                <input name="prenom" type="text" id="prenom" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="qualite">Qualité</label>
+                                <input name="qualite" type="text" id="qualite" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="etablissement">Établissement</label>
+                                <input name="etablissement" type="text" id="etablissement" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="findustage">Date fin de stage</label>
+                                <input name="findustage" type="date" id="findustage" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input name="email" type="email" id="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <input name="phone" type="text" id="phone" class="form-control" required maxlength="10" pattern="^[0-9]{10}$" title="Le téléphone doit contenir exactement 10 chiffres.">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('addStagiaireForm').addEventListener('submit', function(event) {
+        var cin = document.getElementById('cin').value;
+        var phone = document.getElementById('phone').value;
+
+        // Vérification CIN
+        if (!/^[0-9]{14}$/.test(cin)) {
+            alert('Le CIN doit contenir exactement 14 chiffres.');
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
+<script>
+    document.getElementById('editStagiaireForm-{{forloop.counter}}').addEventListener('submit', function(event) {
+        var cin = document.getElementById('cin').value;
+        var phone = document.getElementById('phone').value;
+
+        // Vérification CIN
+        if (!/^[0-9]{14}$/.test(cin)) {
+            alert('Le CIN doit contenir exactement 14 chiffres.');
+            event.preventDefault();
+            return;
+        }
+
+        // Vérification téléphone
+        if (!/^[0-9]{10}$/.test(phone)) {
+            alert('Le téléphone doit contenir exactement 10 chiffres.');
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
+<script>
+    // Validation du formulaire avant envoi
+    document.getElementById('affectationForm').addEventListener('submit', function(event) {
+        var form = this;
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+</script>
+
+    <script src="{% static 'js/sweetalert2/sweetalert2.all.js' %}"></script>
+     {% load sweetify %}
+    {% sweetify %}
+
+    <script>
+         $(document).ready(function() {
+       // Pour le modal d'affectation
+    $('#iencadrent').on('change', function() {
+        var selectedOption = $(this).find('option:selected');
+        var division = selectedOption.data('division');
+        $('#addDivision').val(division);
+    });
+    });
+       
+    // Pagination du tableau
+    $(document).ready(function(){
+        var rowsPerPage = 5;  // Nombre d'entrées à afficher par page
+        var rows = $('table tbody tr');
+        var rowsCount = rows.length;
+        var pageCount = Math.ceil(rowsCount / rowsPerPage); // Nombre de pages total
+
+        // Ajouter les boutons de pagination
+        for (var i = 0; i < pageCount; i++) {
+            $('.pagination').append('<li class="page-item"><a href="#" class="page-link">'+(i+1)+'</a></li>');
+        }
+        
+        $('.pagination li:first').addClass('active'); // Activer la première page
+        
+        // Afficher les lignes pour la première page
+        showPage(1);
+
+        // Gérer les clics sur les liens de pagination
+        $('.pagination li a').click(function(e) {
+            e.preventDefault();
+            var pageNum = $(this).text(); // Numéro de la page
+            showPage(pageNum);
+            $('.pagination li').removeClass('active');
+            $(this).parent().addClass('active');
+        });
+
+        // Gérer les clics sur le bouton "Précédent"
+        $('.pagination').prepend('<li class="page-item"><a href="#" class="prev-page">Previous</a></li>');
+        $('.prev-page').click(function(e) {
+            e.preventDefault();
+            var activePage = $('.pagination li.active').index();
+            if (activePage > 1) {
+                showPage(activePage - 1);
+                $('.pagination li').removeClass('active');
+                $('.pagination li').eq(activePage - 1).addClass('active');
+            }
+        });
+
+        // Gérer les clics sur le bouton "Suivant"
+        $('.pagination').append('<li class="page-item"><a href="#" class="next-page">Next</a></li>');
+        $('.next-page').click(function(e) {
+            e.preventDefault();
+            var activePage = $('.pagination li.active').index();
+            if (activePage < pageCount) {
+                showPage(activePage + 1);
+                $('.pagination li').removeClass('active');
+                $('.pagination li').eq(activePage + 1).addClass('active');
+            }
+        });
+
+        // Fonction pour afficher une page spécifique
+        function showPage(pageNum) {
+            var startRow = (pageNum - 1) * rowsPerPage;
+            var endRow = startRow + rowsPerPage;
+            rows.hide(); // Masquer toutes les lignes
+            rows.slice(startRow, endRow).show(); // Afficher les lignes de la page en cours
+        }
+    });        
+
+
+    </script>
+    <script>
+    document.getElementById('searchField').addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            window.location.href = window.location.href.split('?')[0]; // Recharge la page sans paramètres
+        }
+    });
+</script>
+
+<script>
+    document.querySelector("form").addEventListener("submit", function(event) {
+        const cin = document.getElementById("cin").value;
+        const regex = /^[0-9]{14}$/;  // Expression régulière pour vérifier 14 chiffres
+
+        if (!regex.test(cin)) {
+            event.preventDefault();  // Empêche l'envoi du formulaire
+            alert("Le CIN doit contenir exactement 14 chiffres.");
+        }
+    });
+</script>
+    
+
+</body>
+</html>
+{% endblock contenu %}

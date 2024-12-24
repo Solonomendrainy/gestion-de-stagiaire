@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Stagiaires</title>
+
+    <!-- Charger les fichiers statiques -->
+    {% load static %}
+    
+    <!-- Inclure le fichier CSS externe -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.js' %}">
+    
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Gestion des Stagiaires</h2>
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="#">Liste Des Stagiaires</a></li>
+            <li><a href="#">Ajouter Stagiaire</a></li>
+            <li><a href="#">Stage</a></li>
+            <li><a href="#">Encadrant</a></li>
+            <li><a href="#">Absence</a></li>
+            <li><a href="#">Recherche</a></li>
+            <li><a href="#">Gestion des comptes</a></li>
+            <li><a href="#">Envoyer email</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>Tableau de bord</h1>
+            <p>Bonjour, {{ user.username }} (Administrateur)</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat red">
+                <p>Stagiaires</p>
+                <h3>{{ stagiaires_count }}</h3>
+                <p>2 nouveaux</p>
+                <p>2 en cours</p>
+                <p>0 en archive</p>
+            </div>
+            <div class="stat green">
+                <p>Stages</p>
+                <h3>{{ stages_count }}</h3>
+                <p>2 affecté</p>
+                <p>1 non affecté</p>
+            </div>
+            <div class="stat blue">
+                <p>Encadrants</p>
+                <h3>{{ encadrants_count }}</h3>
+                <p>2 affecté</p>
+                <p>1 non affecté</p>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <h3>Calendrier</h3>
+            <p>Mai 2017</p>
+            <!-- Ajoute ton propre composant calendrier ici -->
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

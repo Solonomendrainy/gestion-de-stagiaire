@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+
+    <!-- Charger les fichiers statiques -->
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/template_de_base.css' %}">
+    
+     <link href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet">
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 sidebar">
+                <h2>Gestion des Stagiaires</h2>
+                <a href="{% url 'home' %}" class="small py-2 {% if request.path == '/login/home/' %}active{% endif %} ">Accueil</a>
+                <a href="{% url 'stagiaires' %}" class="small py-2 {% if request.path == '/stagiaire/' %}active{% endif %} " >Liste des Stagiaires</a>
+                <a href="{% url 'stagiaires' %}" class="small py-2">Ajouter Stagiaire</a>
+                <a href="{% url 'stages' %}" class="small py-2 {% if request.path == '/stage/' %}active{% endif %} bi bi-briefcase-fill"> Stage</a>
+                <a href="{% url 'encadrents' %}" class="small py-2 {% if request.path == '/encadrent/' %}active{% endif %} bi bi-person-workspace"> Encadrant</a>
+                <a href="{% url 'absence' %}" class="small py-2 {% if request.path == '/absence/' %}active{% endif %} ">Absence</a>
+                <a href="{% url 'stagiairesencours' %}" class="small py-2 {% if request.path == '/stagiairesencours/' %}active{% endif %} bi bi-people-fill"> Stagiares en cours</a>
+                <a href="{% url 'list_users' %}" class="small py-2">Gestion des Comptes</a>
+            </nav>
+
+            <!-- Content -->
+<div class="col-md-10 content">
+<header class="py-3 px-4 bg-light border-bottom">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <h1 class="welcome-message mb-0">Bonjour {{ user.username }}</h1>
+        <a href="{% url 'logout' %}" class="btn btn-light logout-icon">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+    </div>
+</header>
+                <div class="row">
+                    <!-- Card 1 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card p-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Stagiaires</h5>
+                                <p>{{ nombre_stagiairesNouveaux }} nouveaux, {{ stagiaires_en_cours }} en cours</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card p-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Stages</h5>
+                                <p>{{ stages }} stages</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card p-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Encadrants</h5>
+                                <p>{{ nombre_encadrent }} encadrants</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>     
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-9">
+        <canvas id="stagiairesChart"></canvas>
+    </div>
+</div>
+
+<!-- Insert JSON data inside a script tag with type 'application/json' -->
+<script id="stagiaires-data" type="application/json">
+    {{ data|safe }}
+</script>
+
+<!-- Chargement de vos scripts JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+     // Récupération et analyse des données JSON
+    const data = JSON.parse(document.getElementById('stagiaires-data').textContent);
+
+    // Graphique pour les stagiaires
+    const stagiairesChartCtx = document.getElementById('stagiairesChart').getContext('2d');
+    new Chart(stagiairesChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Nouveaux stagaires', 'Stagaires en cours','Encadrants', 'Stages'],
+            datasets: [{
+                label: 'Stagiaires',
+                data: [
+                    data.stagiaires.nouveaux, 
+                    data.stagiaires.en_cours,  
+                    data.stagiaires.nombre_encadrent,  // Données des encadrants
+                    data.stagiaires.stages ,             // Données des stages
+                ],
+                backgroundColor: ['#ffc0ec','#ff5733','#ffcd56', '#36a2eb', '#4bc0c0'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+
+
+
+
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.js' %}"></script>
+    
+</body>
+</html>
